@@ -1,4 +1,8 @@
 {
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
   "compilerOptions": {
     "target": "ES6",
     "allowSyntheticDefaultImports": true
@@ -7,12 +11,18 @@
     "node_modules"
   ],
   "extends": [
-    "eslint:recommended",
-    "plugin:node/recommended"
+    "eslint:recommended"
   ],
   "plugins": [
     "import",
     "node",
     "promise"
-  ]
+  ],
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "globals": {
+    "angular": true
+  }
 }

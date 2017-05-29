@@ -20,9 +20,11 @@
   ],
   "env": {
     "browser": true,
-    "node": true
+    "node": true,
+    "jasmine": true
   },
   "globals": {
-    "angular": true
+    "angular": true,
+    "inject": true
   }
 }

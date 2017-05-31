@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script src="../../node_modules/angular/angular.js"></script>
+    <script src="../../node_modules/angular-mocks/angular-mocks.js"></script>
+    <script type="text/javascript" src="../../node_modules/localforage/dist/localforage.js"></script>
+    <script type="text/javascript" src="../../node_modules/angular-localforage/dist/angular-localForage.js"></script>
+    <script src="../../dist/bm-angularjs-pending-queue.js"></script>
+    <script src="./index.js"></script>
+    <script src="pending-queue-e2e.js"></script>
+  </head>
+  <body ng-app="pendingQueueDev">
+    <div ng-controller="testCtrl as $ctrl">
+      <form ng-submit="$ctrl.submit($ctrl.model)">
+        <label for="text">Text</label>
+        <input name="text" ng-model="$ctrl.model.text" />
+        <label for="make-invalid">Make invalid<input type="checkbox" name="make-invalid" ng-model="$ctrl.model.invalid"/></label>
+        <input type="submit" value="submit" />
+      </form>
+    </div>
+  </body>
+</html>

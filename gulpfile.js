@@ -94,7 +94,7 @@ const karmaFiles = [
   'node_modules/localforage/dist/localforage.js',
   'node_modules/angular-localforage/dist/angular-localForage.js',
   `dist/${FILENAME}`,
-  'test/**/*.js'
+  'test/unit/*.js'
 ]
 
 gulp.task('test', ['build-prod'], (done) => {

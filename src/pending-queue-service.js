@@ -2,15 +2,14 @@
 
 pendingQueueService.$inject = ['$localForage', 'uuidService']
 function pendingQueueService ($localForage, uuidService) {
-  this.save = function saveToPendingQueue (requestConfig) {
-    const uuid = requestConfig.data._uuid || uuidService()
-    requestConfig.data._uuid = uuid // make sure that the _uuid prop exists
-    const data = {
-      request: requestConfig,
-      dateCreated: (new Date()).getTime()
-    }
+  this.save = function saveToPendingQueue ({url, data, headers, params, method }) {
+    const uuid = data._uuid || uuidService()
+    data._uuid = uuid // make sure that the _uuid prop exists
 
-    return $localForage.setItem(uuid, data)
+    return $localForage.setItem(uuid, {
+      request: {url, data, headers, params, method},
+      dateCreated: (new Date()).getTime()
+    })
   }
 
   this.get = function getFromPendingQueue (uuid) {

@@ -7,7 +7,7 @@ function pendingQueueService ($localForage, uuidService) {
     requestConfig.data._uuid = uuid // make sure that the _uuid prop exists
     const data = {
       request: requestConfig,
-      dateCreated: (new Date())
+      dateCreated: (new Date()).getTime()
     }
 
     return $localForage.setItem(uuid, data)
@@ -17,13 +17,30 @@ function pendingQueueService ($localForage, uuidService) {
     return $localForage.getItem(uuid)
   }
 
-  this.getNext = function () {
-    return $localForage.key(0)
-    // return $localForage.length().then((l) => $localForage.key(l - 1))
+  this.getEarliest = function () {
+    let currDate = (new Date()).getTime()
+    let oldestForm
+
+    return $localForage.length().then((count) => {
+      return $localForage.iterate((form, key, loopCount) => {
+        if (form.dateCreated < currDate) {
+          currDate = form.dateCreated
+          oldestForm = form
+        }
+
+        if (loopCount >= count) {
+          return oldestForm
+        }
+      })
+    })
   }
 
   this.remove = function removeFromPendingQueue (uuid) {
     return $localForage.pull(uuid)
+  }
+
+  this.clear = function clearPendingQueue () {
+    return $localForage.clear()
   }
 
   this.setResponse = function setResponseOnItem (uuid, response) {

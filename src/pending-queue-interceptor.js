@@ -1,5 +1,6 @@
 'use strict'
 
+pendingQueueInteceptor.$inject = ['$q', 'bmPendingQueueService']
 function pendingQueueInteceptor ($q, bmPendingQueueService) {
   const isPOSTorPUT = (method) => ['POST', 'PUT'].indexOf(method) > -1
   const isFormData = (contentType) => contentType.toLowerCase().indexOf('application/x-www-form-urlencoded') > -1
@@ -12,7 +13,7 @@ function pendingQueueInteceptor ($q, bmPendingQueueService) {
     request: function (config) {
       // need to verify that we are dealing with a form, oitherwise we will try and store any http request
       if (isForm(config)) {
-        return bmPendingQueueService.save(config)
+        return bmPendingQueueService.save(config).then(() => config)
       }
 
       return config
@@ -20,7 +21,7 @@ function pendingQueueInteceptor ($q, bmPendingQueueService) {
 
     response: function (response) {
       if (isForm(response.config)) {
-        if (status >= 200 && status < 300) {
+        if (response.status >= 200 && response.status < 300) {
           return bmPendingQueueService.remove(response.config.data._uuid).then(() => response)
         }
         const cleanedResponse = {
@@ -29,7 +30,7 @@ function pendingQueueInteceptor ($q, bmPendingQueueService) {
           statusText: response.statusText
         }
 
-        return bmPendingQueueService.setResponseOnItem(response.config.data._uuid, cleanedResponse)
+        return bmPendingQueueService.setResponse(response.config.data._uuid, cleanedResponse)
           .then(() => response)
       }
 

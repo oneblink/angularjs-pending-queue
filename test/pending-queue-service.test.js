@@ -1,18 +1,10 @@
 'use strict'
 
-const triggerDigests = function($rootScope) {
-  return setInterval(function() {
-    $rootScope.$apply();
-  }, 10)
-}
-const stopDigests = function(interval) {
-  window.clearInterval(interval);
-}
-
 describe('pending queue service', () => {
   let bmPendingQueueService
   let $rootScope
   let $q
+  let interval
 
   beforeEach(() => {
     module('bmPendingQueue', 'LocalForageModule')
@@ -21,6 +13,11 @@ describe('pending queue service', () => {
       $rootScope = _$rootScope_
       $q = _$q_
     })
+    interval = triggerDigests($rootScope)
+  })
+
+  afterEach(() => {
+    stopDigests(interval)
   })
 
   it('should exist', () => {
@@ -29,21 +26,17 @@ describe('pending queue service', () => {
 
   it('should save the request with a uuid', (done) => {
     let uuid
-    const interval = triggerDigests($rootScope)
 
-    bmPendingQueueService.save({data: {}}).then((result) => {
-      uuid = result.request.data._uuid
-      expect(uuid).not.toBe(undefined)
-      expect(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/.test(uuid)).toBe(true)
+    bmPendingQueueService.save({data: {}})
+      .then((result) => {
+        uuid = result.request.data._uuid
+        expect(uuid).not.toBe(undefined)
+        expect(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/.test(uuid)).toBe(true)
 
-      return bmPendingQueueService.clear()
-    }).then(() => {
-      stopDigests(interval)
-      done()
-    }).catch((e) => {
-      stopDigests(interval)
-      done.fail(e)
-    })
+        return bmPendingQueueService.clear()
+      })
+      .then(done)
+      .catch(done.fail)
   })
 
   describe('a pending queue with items in it', () => {
@@ -51,32 +44,20 @@ describe('pending queue service', () => {
 
     beforeEach(function (done) {
       uuids = []
-      const interval = triggerDigests($rootScope)
       const save = (memo, val) => {
         return memo.then(() => bmPendingQueueService.save({data: {id: val}})
                                 .then((data) => uuids.push(data.request.data._uuid)))
       }
 
       [1, 2, 3, 4, 5].reduce(save, $q.resolve())
-        .then(() => {
-          stopDigests(interval)
-          done()
-        }).catch((e) => {
-          stopDigests(interval)
-          done.fail(e)
-        })
+        .then(done)
+        .catch(done.fail)
     })
 
     afterEach(function (done) {
-      const interval = triggerDigests($rootScope)
       bmPendingQueueService.clear()
-        .then(() => {
-          stopDigests(interval)
-          done()
-        }).catch((e) => {
-          stopDigests(interval)
-          done.fail(e)
-        })
+        .then(done)
+        .catch(done.fail)
     })
 
     it('should have 5 uuids', () => {
@@ -89,22 +70,15 @@ describe('pending queue service', () => {
     // this may or may not be because we're in a unit test and
     // are manually running the digest cycle
     it('should get the earliest entry', (done) => {
-      const interval = triggerDigests($rootScope)
       bmPendingQueueService.getEarliest().then((result) => {
         expect(result).not.toBe(undefined)
         expect(result.request.data.id).toBe(1)
-
-      }).then(() => {
-        stopDigests(interval)
-        done()
-      }).catch((e) => {
-        stopDigests(interval)
-        done.fail(e)
       })
+      .then(done)
+      .catch(done.fail)
     })
 
     it('should return the correct entry', (done) => {
-      const interval = triggerDigests($rootScope)
       const expectedUUID = uuids[0]
       const expectedId = 1
       bmPendingQueueService.get(expectedUUID)
@@ -112,29 +86,19 @@ describe('pending queue service', () => {
           expect(result).not.toBe(undefined)
           expect(result.request.data._uuid).toBe(expectedUUID)
           expect(result.request.data.id).toBe(expectedId)
-          stopDigests(interval)
-          done()
-        }).catch((e) => {
-        stopDigests(interval)
-        done.fail(e)
-      })
+        })
+        .then(done)
+        .catch(done.fail)
     })
 
     it('should return `null` if entry is not in the pending queue', (done) => {
-      const interval = triggerDigests($rootScope)
       bmPendingQueueService.get('doesnt exist')
-        .then((result) => {
-          expect(result).toBeNull()
-          stopDigests(interval)
-          done()
-        }).catch((e) => {
-          stopDigests(interval)
-          done.fail(e)
-        })
+        .then((result) => expect(result).toBeNull())
+        .then(done)
+        .catch(done.fail)
     })
 
     it('should remove the item from the pending queue', (done) => {
-      const interval = triggerDigests($rootScope)
       const expectedUUID = uuids[0]
       const expectedId = 1
       bmPendingQueueService.remove(expectedUUID)
@@ -143,34 +107,19 @@ describe('pending queue service', () => {
           expect(result.request.data._uuid).toBe(expectedUUID)
           expect(result.request.data.id).toBe(expectedId)
         }).then(() => bmPendingQueueService.get(expectedUUID))
-        .then((result) => {
-          expect(result).toBeNull()
-        })
-        .then(() => {
-          stopDigests(interval)
-          done()
-        })
-        .catch((e) => {
-        stopDigests(interval)
-        done.fail(e)
-      })
+        .then((result) => expect(result).toBeNull())
+        .then(done)
+        .catch(done.fail)
     })
 
     it('should return null when removing a uuid that doesnt exist', (done) => {
-      const interval = triggerDigests($rootScope)
       bmPendingQueueService.remove('doesnt exist')
-        .then((result) => {
-          expect(result).toBeNull()
-          stopDigests(interval)
-          done()
-        }).catch((e) => {
-          stopDigests(interval)
-          done.fail(e)
-        })
+        .then((result) => expect(result).toBeNull())
+        .then(done)
+        .catch(done.fail)
     })
 
     it('should update the response part of an entry', (done) => {
-      const interval = triggerDigests($rootScope)
       const expectedUUID = uuids[0]
       const expectedId = 1
       const expectedResponse = 'new response'
@@ -181,16 +130,13 @@ describe('pending queue service', () => {
           expect(result.request.data.id).toBe(expectedId)
 
           return bmPendingQueueService.setResponse(expectedUUID, expectedResponse)
-        }).then((result) => {
+        })
+        .then((result) => {
           expect(result).not.toBeNull()
           expect(result.response).toBe(expectedResponse)
-        }).then(() => {
-          stopDigests(interval)
-          done()
-        }).catch((e) => {
-          stopDigests(interval)
-          done.fail(e)
         })
+        .then(done)
+        .catch(done.fail)
     })
   })
 })

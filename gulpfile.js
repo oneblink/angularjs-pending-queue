@@ -89,12 +89,11 @@ gulp.task('clean', () => {
 })
 
 const karmaFiles = [
-  // 'node_modules/babel-helpers/lib/index.js',
   'node_modules/angular/angular.js',
   'node_modules/angular-mocks/angular-mocks.js',
   'node_modules/localforage/dist/localforage.js',
   'node_modules/angular-localforage/dist/angular-localForage.js',
-  'dist/' + minifiedName`${FILENAME}`,
+  `dist/${FILENAME}`,
   'test/**/*.test.js'
 ]
 

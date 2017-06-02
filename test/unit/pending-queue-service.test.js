@@ -131,9 +131,22 @@ describe('pending queue service', () => {
 
           return bmPendingQueueService.setResponse(expectedUUID, expectedResponse)
         })
+        .then(() => bmPendingQueueService.get(expectedUUID))
         .then((result) => {
           expect(result).not.toBeNull()
           expect(result.response).toBe(expectedResponse)
+        })
+        .then(done)
+        .catch(done.fail)
+    })
+
+    it('should update an entry if the same uuid is used', (done) => {
+      const uuid = uuids[0]
+      const config = {data: {foo: 'bar', _uuid: uuid}}
+
+      bmPendingQueueService.save(config)
+        .then((savedItem) => {
+          expect(savedItem.request.data).toEqual(config.data)
         })
         .then(done)
         .catch(done.fail)

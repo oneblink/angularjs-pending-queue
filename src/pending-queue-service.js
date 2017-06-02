@@ -1,7 +1,7 @@
 'use strict'
 
-pendingQueueService.$inject = ['$localForage', 'uuidService']
-function pendingQueueService ($localForage, uuidService) {
+pendingQueueService.$inject = ['$q', '$localForage', 'uuidService']
+function pendingQueueService ($q, $localForage, uuidService) {
   this.save = function saveToPendingQueue ({url, data, headers, params, method }) {
     const uuid = data._uuid || uuidService()
     data._uuid = uuid // make sure that the _uuid prop exists
@@ -46,7 +46,15 @@ function pendingQueueService ($localForage, uuidService) {
     return this.get(uuid).then((data) => {
       data.response = response
       return data
-    })
+    }).then((data) => $localForage.setItem(uuid, data))
+  }
+
+  this.iterate = function iterate (iter) {
+    return $localForage.iterate(iter)
+  }
+
+  this.length = function () {
+    return $localForage.length()
   }
 }
 

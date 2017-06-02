@@ -174,12 +174,12 @@ describe('pending queue interceptor,', () => {
             status: response.status,
             statusText: response.statusText
           }
-          const result = bmPendingQueueInterceptor.response(response)
+          const result = bmPendingQueueInterceptor.responseError(response)
           expect(bmPendingQueueService.remove).not.toHaveBeenCalled()
           expect(bmPendingQueueService.setResponse).toHaveBeenCalledWith(response.config.data._uuid, expectedUpdateData)
           result.then((result) => expect(result).toBe(response))
-            .then(done)
-            .catch(done.fail)
+            .then(done.fail)
+            .catch(done)
         })
       })
     })

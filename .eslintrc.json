@@ -26,6 +26,9 @@
   "globals": {
     "angular": true,
     "inject": true,
+    "browser": true,
+    "element": true,
+    "by": true,
     "triggerDigests": true,
     "stopDigests": true
   }

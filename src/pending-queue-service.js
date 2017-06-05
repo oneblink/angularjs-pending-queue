@@ -2,7 +2,7 @@
 
 pendingQueueService.$inject = ['$rootScope', '$q', '$localForage', 'uuidService']
 function pendingQueueService ($rootScope, $q, $localForage, uuidService) {
-  this.save = function saveToPendingQueue ({url, data, headers, params, method }) {
+  this.save = function saveToPendingQueue ({url, data, headers, params, method}) {
     const uuid = data._uuid || uuidService()
     data._uuid = uuid // make sure that the _uuid prop exists
 

@@ -3,6 +3,7 @@
 const uuidService = require('./uuid-service.js')
 const pendingQueueService = require('./pending-queue-service.js')
 const pendingQueueInterceptor = require('./pending-queue-interceptor.js')
+const $httpDecorator = require('./http-decorator.js')
 
 angular.module('bmPendingQueue', ['LocalForageModule'])
   .constant('dbName', 'bmOfflineStorage')
@@ -17,6 +18,7 @@ angular.module('bmPendingQueue', ['LocalForageModule'])
 
       $httpProvider.interceptors.push('bmPendingQueueInterceptor')
     }])
+  .decorator('$http', $httpDecorator)
   .factory('bmPendingQueueInterceptor', pendingQueueInterceptor)
   .service('uuidService', uuidService)
   .service('bmPendingQueueService', pendingQueueService)

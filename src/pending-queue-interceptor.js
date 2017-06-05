@@ -21,16 +21,17 @@ function pendingQueueInteceptor ($q, bmPendingQueueService) {
     },
 
     response: function (response) {
-      if (isForm(response.config)) {
+      if (response.config && isForm(response.config)) {
+console.log(`removing ${response.config.data._uuid} from cache`) // eslint-disable-line
         return bmPendingQueueService.remove(response.config.data._uuid)
           .then(() => response)
       }
-
+console.log('just returning response', response) // eslint-disable-line
       return response
     },
 
     responseError: function (rejection) {
-      if (isForm(rejection.config)) {
+      if (rejection.config && isForm(rejection.config)) {
         const cleanedResponse = {
           data: rejection.data,
           status: rejection.status,

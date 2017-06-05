@@ -1,7 +1,7 @@
 'use strict'
 
-pendingQueueService.$inject = ['$q', '$localForage', 'uuidService']
-function pendingQueueService ($q, $localForage, uuidService) {
+pendingQueueService.$inject = ['$rootScope', '$q', '$localForage', 'uuidService']
+function pendingQueueService ($rootScope, $q, $localForage, uuidService) {
   this.save = function saveToPendingQueue ({url, data, headers, params, method }) {
     const uuid = data._uuid || uuidService()
     data._uuid = uuid // make sure that the _uuid prop exists
@@ -9,6 +9,9 @@ function pendingQueueService ($q, $localForage, uuidService) {
     return $localForage.setItem(uuid, {
       request: {url, data, headers, params, method},
       dateCreated: (new Date()).getTime()
+    }).then((result) => {
+      $rootScope.$broadcast('bmPendingQueueAdd', result)
+      return result
     })
   }
 
@@ -36,10 +39,18 @@ function pendingQueueService ($q, $localForage, uuidService) {
 
   this.remove = function removeFromPendingQueue (uuid) {
     return $localForage.pull(uuid)
+      .then((result) => {
+        $rootScope.$broadcast('bmPendingQueueRemove', result)
+        return result
+      })
   }
 
   this.clear = function clearPendingQueue () {
     return $localForage.clear()
+      .then((result) => {
+        $rootScope.$broadcast('bmPendingQueueRemove', result)
+        return result
+      })
   }
 
   this.setResponse = function setResponseOnItem (uuid, response) {

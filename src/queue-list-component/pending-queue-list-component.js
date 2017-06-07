@@ -45,7 +45,7 @@ function PendingQueueListController($scope, $q, $sce, bmPendingQueueService) {
 module.exports = {
   controller: PendingQueueListController,
   controllerAs: 'PendingQueueListCtrl',
-  template: `<div class="<bm-pending-queue">
+  template: `<div class="bm-pending-queue">
   <ul class="bm-pending-queue__list">
     <li class="bm-pending-queue__list-item" ng-repeat="item in PendingQueueListCtrl.pendingQueue">
       <a  class="bm-pending-queue__select-item"

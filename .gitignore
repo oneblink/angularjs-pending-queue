@@ -3,3 +3,6 @@
 
 node_modules
 npm-debug.log
+
+# dont send the dist files to git
+dist/

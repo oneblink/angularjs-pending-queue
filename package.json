@@ -29,7 +29,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^2.0.0",
     "http-server": "^0.10.0",
-    "jasmine-core": "^2.5.2",
+    "jasmine-core": "^2.6.2",
     "jasmine-spec-reporter": "^4.1.0",
     "karma": "^1.4.1",
     "karma-babel-preprocessor": "^6.0.1",

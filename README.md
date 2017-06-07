@@ -5,7 +5,7 @@ AngularJS 1.5+ module to save form data to the browser or device storage when th
 # Installation
 
 ```
-npm i @blinkmobile/angular-pending-queue
+npm i @blinkmobile/angularjs-pending-queue
 ```
 
 # Setup

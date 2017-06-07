@@ -26,6 +26,7 @@
   "globals": {
     "angular": true,
     "inject": true,
+    "protractor": true,
     "browser": true,
     "element": true,
     "by": true,

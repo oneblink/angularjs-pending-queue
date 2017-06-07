@@ -1,7 +1,7 @@
 {
   "name": "@blinkmobile/angular-pending-queue",
   "description": "[![npm](https://img.shields.io/npm/v/@blinkmobile/angular-pending-queue.svg?maxAge=2592000)](https://www.npmjs.com/package/@blinkmobile/angular-pending-queue)",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha.1",
   "author": "Blink Mobile Technologies",
   "contributors": [
     {
@@ -10,8 +10,8 @@
     }
   ],
   "dependencies": {
-    "angular-localforage": "^1.3.7",
-    "uuid": "^3.0.1"
+    "angular-localforage": "1.3.7",
+    "uuid": "3.0.1"
   },
   "devDependencies": {
     "angular": "^1.6.1",
@@ -28,9 +28,9 @@
     "gulp-angular-embed-templates": "^2.3.0",
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^2.0.0",
-    "gulp-util": "^3.0.8",
     "http-server": "^0.10.0",
     "jasmine-core": "^2.5.2",
+    "jasmine-spec-reporter": "^4.1.0",
     "karma": "^1.4.1",
     "karma-babel-preprocessor": "^6.0.1",
     "karma-chrome-launcher": "^2.0.0",
@@ -39,12 +39,11 @@
     "karma-firefox-launcher": "^1.0.0",
     "karma-ie-launcher": "^1.0.0",
     "karma-jasmine": "^1.1.0",
+    "karma-jasmine-diff-reporter": "^1.0.0",
     "karma-rollup-plugin": "^0.2.4",
     "karma-safari-launcher": "^1.0.0",
     "npm-run-all": "^4.0.2",
-    "opn": "^5.0.0",
     "opn-cli": "^3.1.0",
-    "prettier": "^1.3.1",
     "protractor": "^5.1.2",
     "pump": "^1.0.2",
     "rollup": "^0.37.2",
@@ -58,24 +57,35 @@
     "node": ">=7",
     "npm": ">=4"
   },
-  "keywords": [],
-  "license": "ISC",
-  "main": "index.js",
+  "files": [
+    "dist/"
+  ],
+  "keywords": [
+    "$http",
+    "AngularJS",
+    "Blink Mobile",
+    "BlinkMobile",
+    "Pending Queue",
+    "localForage"
+  ],
+  "license": "MIT",
+  "main": "dist/bm-angularjs-pending-queue.min.js",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "ava": "ava",
+    "build": "gulp build",
+    "e2e-server": "http-server -a localhost -p 8000 -s",
     "eslint": "eslint --fix --cache .",
     "fixpack": "fixpack",
-    "pretest": "npm run eslint && npm run prettier && npm run fixpack",
-    "prettier": "prettier --single-quote --write \"{,!(build|coverage|dist|node_modules)/**/}*.js\"",
+    "opn": "opn http://localhost:8000/test/e2e/index.html",
     "postinstall": "webdriver-manager update",
-    "test": "npm run ava",
-    "test-e2e": "npm-run-all -p -r webdriver-start e2e-server protractor",
+    "prepublishOnly": "gulp build",
+    "pretest": "npm run eslint && npm run fixpack",
     "protractor": "protractor test/protractor/conf.js",
-    "webdriver-start": "webdriver-manager start",
-    "e2e-server": "http-server -a localhost -p 8000",
-    "opn": "opn http://localhost:8000/test/e2e/index.html"
+    "test": "gulp test-single-run",
+    "test-e2e": "npm-run-all -s build -p -r webdriver-start e2e-server protractor",
+    "test-human": "npm-run-all -s build -p e2e-server opn",
+    "webdriver-start": "webdriver-manager start --logging test/e2e/logger-config.json"
   }
 }

@@ -2,22 +2,29 @@
 
 const app = angular.module('app', ['bmPendingQueue'])
 
-app.controller('testCtrl', ['$http', '$scope', 'bmPendingQueueService', function ($http, $scope, bmPendingQueueService) {
-  this.model = {}
+app.controller('testCtrl', ['$http', '$scope', '$timeout', '$log', 'bmPendingQueueService',
+  function($http, $scope, $timeout, $log, bmPendingQueueService) {
+    const $ctrl = this
+    $ctrl.model = {}
 
-  $scope.$on('bmPendingQueueFail', (evt, data) => console.log('i got a fail: ' + evt, data))
-  $scope.$on('bmPendingQueueSuccess', (evt, forms) => console.log('great success!', forms))
-  this.submit = function (form) {
-    form._uuid = null
-    if (form.timeout) {
-      return $http.post('/test-timeout', form, {headers: {'Content-Type': 'application/json'}, timeout: 1})
-        .catch((err) => console.log(err))
+    $ctrl.submit = function(form) {
+      if (form.offline) {
+        return $http.post('http://offline', form, {
+          headers: { 'Content-Type': 'application/json' }
+        })
+      }
+      $http.post('/test', form, {headers: { 'Content-Type': 'application/json' }})
+        .catch(err => $log.log(err))
+
+      $ctrl.model = {}
     }
-    $http.post('/test', form, {headers: {'Content-Type': 'application/json'}})
-      .catch((err) => console.log(err))
-  }
 
-  $scope.pendingQueueItemClick = function (item) {
-    bmPendingQueueService.remove(item._uuid)
+    $ctrl.pendingQueueItemClick = function(item) {
+      $ctrl.model = item
+    }
+
+    $ctrl.clearPendingQueue = function() {
+      return bmPendingQueueService.clear()
+    }
   }
-}])
+])

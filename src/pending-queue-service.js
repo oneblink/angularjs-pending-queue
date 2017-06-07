@@ -1,26 +1,28 @@
 'use strict'
 
 pendingQueueService.$inject = ['$rootScope', '$q', '$localForage', 'uuidService']
-function pendingQueueService ($rootScope, $q, $localForage, uuidService) {
-  this.save = function saveToPendingQueue ({url, data, headers, params, method}) {
+function pendingQueueService($rootScope, $q, $localForage, uuidService) {
+  this.save = function saveToPendingQueue({url, data, headers, params, method}) {
     const uuid = data._uuid || uuidService()
     data._uuid = uuid // make sure that the _uuid prop exists
 
-    return $localForage.setItem(uuid, {
-      request: {url, data, headers, params, method},
-      dateCreated: (new Date()).getTime()
-    }).then((result) => {
-      $rootScope.$broadcast('bmPendingQueueAdd', result)
-      return result
-    })
+    return $localForage
+      .setItem(uuid, {
+        request: {url, data, headers, params, method},
+        dateCreated: new Date().getTime()
+      })
+      .then((item) => {
+        $rootScope.$broadcast('bmPendingQueueAdd', item)
+        return item
+      })
   }
 
-  this.get = function getFromPendingQueue (uuid) {
+  this.get = function getFromPendingQueue(uuid) {
     return $localForage.getItem(uuid)
   }
 
-  this.getEarliest = function () {
-    let currDate = (new Date()).getTime()
+  this.getEarliest = function getEarliest() {
+    let currDate = new Date().getTime()
     let oldestForm
 
     return $localForage.length().then((count) => {
@@ -37,34 +39,35 @@ function pendingQueueService ($rootScope, $q, $localForage, uuidService) {
     })
   }
 
-  this.remove = function removeFromPendingQueue (uuid) {
-    return $localForage.pull(uuid)
-      .then((result) => {
-        $rootScope.$broadcast('bmPendingQueueRemove', result)
-        return result
+  this.remove = function removeFromPendingQueue(uuid) {
+    return $localForage.pull(uuid).then(result => {
+      $rootScope.$broadcast('bmPendingQueueRemove', result)
+      return result
+    })
+  }
+
+  this.clear = function clearPendingQueue() {
+    return $localForage.clear().then(result => {
+      $rootScope.$broadcast('bmPendingQueueRemove', result)
+      return result
+    })
+  }
+
+  this.setResponse = function setResponseOnItem(uuid, response) {
+    return this.get(uuid)
+      .then((data) => {
+        data.response = response
+        $rootScope.$broadcast('bmPendingQueueItemUpdate', data)
+        return data
       })
+      .then((data) => $localForage.setItem(uuid, data))
   }
 
-  this.clear = function clearPendingQueue () {
-    return $localForage.clear()
-      .then((result) => {
-        $rootScope.$broadcast('bmPendingQueueRemove', result)
-        return result
-      })
-  }
-
-  this.setResponse = function setResponseOnItem (uuid, response) {
-    return this.get(uuid).then((data) => {
-      data.response = response
-      return data
-    }).then((data) => $localForage.setItem(uuid, data))
-  }
-
-  this.iterate = function iterate (iter) {
+  this.iterate = function iterate(iter) {
     return $localForage.iterate(iter)
   }
 
-  this.length = function () {
+  this.length = function length() {
     return $localForage.length()
   }
 }

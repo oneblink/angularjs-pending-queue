@@ -2,7 +2,7 @@
 
 const uuid = require('uuid/v4')
 
-function uuidService () {
+function uuidService() {
   return () => uuid()
 }
 

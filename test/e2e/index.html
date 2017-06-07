@@ -15,11 +15,13 @@
         <label for="text">Text</label>
         <input name="text" ng-model="$ctrl.model.text" />
         <label for="make-invalid">Make invalid<input type="checkbox" name="make-invalid" ng-model="$ctrl.model.invalid"/></label>
-        <label for="timeout">Timeout request<input type="checkbox" name="timeout" ng-model="$ctrl.model.timeout"/></label>
+        <label for="make-offline">Make offline<input type="checkbox" name="make-offline" ng-model="$ctrl.model.offline"/></label>
         <input type="submit" value="submit" id="submit"/>
       </form>
 
-      <pending-queue-list on-click="pendingQueueItemClick(item)"></pending-queue-list>
+      <button id="clear-queue" ng-click="$ctrl.clearPendingQueue()">Clear Pending Queue</button>
+
+      <pending-queue-list on-select-item="$ctrl.pendingQueueItemClick(item)" display-key="text"></pending-queue-list>
     </div>
   </body>
 </html>

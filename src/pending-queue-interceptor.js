@@ -1,36 +1,43 @@
 'use strict'
 
-pendingQueueInteceptor.$inject = ['$q', 'bmPendingQueueService']
-function pendingQueueInteceptor ($q, bmPendingQueueService) {
-  const isPOSTorPUT = (method) => ['POST', 'PUT'].indexOf(method) > -1
+pendingQueueInteceptor.$inject = ['$window', '$q', 'bmPendingQueueService']
+function pendingQueueInteceptor($window, $q, bmPendingQueueService) {
+  const isPOSTorPUT = method => ['POST', 'PUT'].indexOf(method) > -1
   const isFormData = (contentType) => contentType.toLowerCase().indexOf('application/x-www-form-urlencoded') > -1
   const isJSONData = (contentType) => contentType.toLowerCase().indexOf('json') > -1
 
-  const isForm = (config) => isPOSTorPUT(config.method.toUpperCase())
-                              && (isFormData(config.headers['Content-Type']) || isJSONData(config.headers['Content-Type']))
+  const isForm = (config) => isPOSTorPUT(config.method.toUpperCase()) &&
+                             (isFormData(config.headers['Content-Type']) || isJSONData(config.headers['Content-Type']))
 
   return {
-    request: function (config) {
-      // need to verify that we are dealing with a form, oitherwise we will try and store any http request
-      if (isForm(config)) {
-        return bmPendingQueueService.save(config)
-          .then(() => config)
+    // request errors are thrown when the server name cant be resolved or if you are offline
+    // as well as when another interceptor rejects the request
+    requestError: function PendingQueueRequestError(rejection) {
+      if (rejection.config && isForm(rejection.config)) {
+        const cleanedResponse = {
+          data: rejection.data,
+          status: rejection.status,
+          statusText: rejection.statusText || (!$window.navigator.onLine ? 'offline' : 'unknown')
+        }
+
+        return bmPendingQueueService
+          .save(rejection.config)
+          .then(() => bmPendingQueueService.setResponse(rejection.config.data._uuid, cleanedResponse))
+          .then(() => $q.reject(rejection))
       }
 
-      return config
+      return $q.reject(rejection)
     },
 
-    response: function (response) {
-      if (response.config && isForm(response.config)) {
-console.log(`removing ${response.config.data._uuid} from cache`) // eslint-disable-line
-        return bmPendingQueueService.remove(response.config.data._uuid)
-          .then(() => response)
+    response: function PendingQueueResponse (response) {
+      if (!response.config || !isForm(response.config) || !response.config.data._uuid) {
+        return response
       }
-console.log('just returning response', response) // eslint-disable-line
-      return response
+
+      return bmPendingQueueService.remove(response.config.data._uuid).then(() => response)
     },
 
-    responseError: function (rejection) {
+    responseError: function PendingQueueResponseError(rejection) {
       if (rejection.config && isForm(rejection.config)) {
         const cleanedResponse = {
           data: rejection.data,
@@ -38,7 +45,9 @@ console.log('just returning response', response) // eslint-disable-line
           statusText: rejection.statusText
         }
 
-        return bmPendingQueueService.setResponse(rejection.config.data._uuid, cleanedResponse)
+        return bmPendingQueueService
+          .save(rejection.config)
+          .then(() => bmPendingQueueService.setResponse(rejection.config.data._uuid, cleanedResponse))
           .then(() => $q.reject(rejection))
       }
 

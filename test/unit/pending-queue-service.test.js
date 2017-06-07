@@ -1,6 +1,6 @@
 'use strict'
 
-describe('pending queue service', () => {
+describe('PENDING QUEUE SERVICE', () => {
   let bmPendingQueueService
   let $rootScope
   let $q
@@ -24,14 +24,19 @@ describe('pending queue service', () => {
     expect(bmPendingQueueService).not.toBe(null)
   })
 
-  it('should save the request with a uuid', (done) => {
+  it('should save the request with a uuid', done => {
     let uuid
 
-    bmPendingQueueService.save({data: {}})
-      .then((result) => {
+    bmPendingQueueService
+      .save({ data: {} })
+      .then(result => {
         uuid = result.request.data._uuid
         expect(uuid).not.toBe(undefined)
-        expect(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/.test(uuid)).toBe(true)
+        expect(
+          /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/.test(
+            uuid
+          )
+        ).toBe(true)
 
         return bmPendingQueueService.clear()
       })
@@ -42,22 +47,21 @@ describe('pending queue service', () => {
   describe('a pending queue with items in it', () => {
     let uuids
 
-    beforeEach(function (done) {
+    beforeEach(function(done) {
       uuids = []
       const save = (memo, val) => {
-        return memo.then(() => bmPendingQueueService.save({data: {id: val}})
-                                .then((data) => uuids.push(data.request.data._uuid)))
+        return memo.then(() =>
+          bmPendingQueueService
+            .save({ data: { id: val } })
+            .then(data => uuids.push(data.request.data._uuid))
+        )
       }
 
-      [1, 2, 3, 4, 5].reduce(save, $q.resolve())
-        .then(done)
-        .catch(done.fail)
+      [1, 2, 3, 4, 5].reduce(save, $q.resolve()).then(done).catch(done.fail)
     })
 
-    afterEach(function (done) {
-      bmPendingQueueService.clear()
-        .then(done)
-        .catch(done.fail)
+    afterEach(function(done) {
+      bmPendingQueueService.clear().then(done).catch(done.fail)
     })
 
     it('should have 5 uuids', () => {
@@ -69,20 +73,23 @@ describe('pending queue service', () => {
     // (i think) to $q being tied to the digest cycle.
     // this may or may not be because we're in a unit test and
     // are manually running the digest cycle
-    it('should get the earliest entry', (done) => {
-      bmPendingQueueService.getEarliest().then((result) => {
-        expect(result).not.toBe(undefined)
-        expect(result.request.data.id).toBe(1)
-      })
-      .then(done)
-      .catch(done.fail)
+    it('should get the earliest entry', done => {
+      bmPendingQueueService
+        .getEarliest()
+        .then(result => {
+          expect(result).not.toBe(undefined)
+          expect(result.request.data.id).toBe(1)
+        })
+        .then(done)
+        .catch(done.fail)
     })
 
-    it('should return the correct entry', (done) => {
+    it('should return the correct entry', done => {
       const expectedUUID = uuids[0]
       const expectedId = 1
-      bmPendingQueueService.get(expectedUUID)
-        .then((result) => {
+      bmPendingQueueService
+        .get(expectedUUID)
+        .then(result => {
           expect(result).not.toBe(undefined)
           expect(result.request.data._uuid).toBe(expectedUUID)
           expect(result.request.data.id).toBe(expectedId)
@@ -91,39 +98,44 @@ describe('pending queue service', () => {
         .catch(done.fail)
     })
 
-    it('should return `null` if entry is not in the pending queue', (done) => {
-      bmPendingQueueService.get('doesnt exist')
+    it('should return `null` if entry is not in the pending queue', done => {
+      bmPendingQueueService
+        .get('doesnt exist')
         .then((result) => expect(result).toBeNull())
         .then(done)
         .catch(done.fail)
     })
 
-    it('should remove the item from the pending queue', (done) => {
+    it('should remove the item from the pending queue', done => {
       const expectedUUID = uuids[0]
       const expectedId = 1
-      bmPendingQueueService.remove(expectedUUID)
+      bmPendingQueueService
+        .remove(expectedUUID)
         .then((result) => {
           expect(result).not.toBe(undefined)
           expect(result.request.data._uuid).toBe(expectedUUID)
           expect(result.request.data.id).toBe(expectedId)
-        }).then(() => bmPendingQueueService.get(expectedUUID))
+        })
+        .then(() => bmPendingQueueService.get(expectedUUID))
+        .then(result => expect(result).toBeNull())
+        .then(done)
+        .catch(done.fail)
+    })
+
+    it('should return null when removing a uuid that doesnt exist', done => {
+      bmPendingQueueService
+        .remove('doesnt exist')
         .then((result) => expect(result).toBeNull())
         .then(done)
         .catch(done.fail)
     })
 
-    it('should return null when removing a uuid that doesnt exist', (done) => {
-      bmPendingQueueService.remove('doesnt exist')
-        .then((result) => expect(result).toBeNull())
-        .then(done)
-        .catch(done.fail)
-    })
-
-    it('should update the response part of an entry', (done) => {
+    it('should update the response part of an entry', done => {
       const expectedUUID = uuids[0]
       const expectedId = 1
       const expectedResponse = 'new response'
-      bmPendingQueueService.get(expectedUUID)
+      bmPendingQueueService
+        .get(expectedUUID)
         .then((result) => {
           expect(result).not.toBe(undefined)
           expect(result.request.data._uuid).toBe(expectedUUID)
@@ -140,12 +152,13 @@ describe('pending queue service', () => {
         .catch(done.fail)
     })
 
-    it('should update an entry if the same uuid is used', (done) => {
+    it('should update an entry if the same uuid is used', done => {
       const uuid = uuids[0]
-      const config = {data: {foo: 'bar', _uuid: uuid}}
+      const config = { data: { foo: 'bar', _uuid: uuid } }
 
-      bmPendingQueueService.save(config)
-        .then((savedItem) => {
+      bmPendingQueueService
+        .save(config)
+        .then(savedItem => {
           expect(savedItem.request.data).toEqual(config.data)
         })
         .then(done)

@@ -1,9 +1,8 @@
 // Karma configuration
 // Generated on Mon Jan 30 2017 11:53:49 GMT+1100 (AUS Eastern Daylight Time)
 
-module.exports = function (config) {
+module.exports = function(config) {
   config.set({
-
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
 
@@ -18,8 +17,7 @@ module.exports = function (config) {
     // ],
 
     // list of files to exclude
-    exclude: [
-    ],
+    exclude: [],
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
@@ -45,17 +43,17 @@ module.exports = function (config) {
     detectBrowsers: {
       // post processing of browsers list
       // here you can edit the list of browsers used by karma
-      postDetection: function (availableBrowsers) {
+      postDetection: function(availableBrowsers) {
         // remove IE from the list.
-        var ieIndex = availableBrowsers.indexOf('IE')
+        var ieIndex = availableBrowsers.indexOf('IE');
         if (ieIndex !== -1) {
-          availableBrowsers.splice(ieIndex, 1)
+          availableBrowsers.splice(ieIndex, 1);
         }
         // Replace Chrome with ChromeTravisCI for travis builds
         if (process.env.TRAVIS) {
-          return ['ChromeTravisCI']
+          return ['ChromeTravisCI'];
         }
-        return availableBrowsers
+        return availableBrowsers;
       },
       usePhantomJS: false
     },
@@ -63,7 +61,12 @@ module.exports = function (config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: ['jasmine-diff', 'progress'],
+
+    jasmineDiffReporter: {
+      verbose: false,
+      pretty: true
+    },
 
     // web server port
     port: 9876,
@@ -73,7 +76,7 @@ module.exports = function (config) {
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-    logLevel: config.LOG_INFO,
+    logLevel: config.LOG_ERROR,
 
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: true,
@@ -89,5 +92,5 @@ module.exports = function (config) {
     // Concurrency level
     // how many browser should be started simultaneous
     concurrency: Infinity
-  })
-}
+  });
+};

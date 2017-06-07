@@ -1,6 +1,6 @@
 # AngularJS Pending Queue [![npm](https://img.shields.io/npm/v/@blinkmobile/angular-pending-queue.svg?maxAge=2592000)](https://www.npmjs.com/package/@blinkmobile/angular-pending-queue)
 
-AngularJS 1.5+ module to save form data to the broswer or device storage when there is no connectivity or a server error
+AngularJS 1.5+ module to save form data to the browser or device storage when there is no connectivity or a server error
 
 # Installation
 

@@ -145,5 +145,41 @@ describe('Protractor tests', () => {
         .then(done)
         .catch(done.fail)
     })
+
+    it('should not remove an item if the user clicks no', (done) => {
+      pendingQueueList
+        .all(by.className('bm-pending-queue__remove-item'))
+        .first()
+        .click()
+
+      browser.switchTo().alert().dismiss()
+      .then(() => browser.waitForAngular())
+        .then(() => {
+          pendingQueueList
+            .all(by.tagName('li'))
+            .count()
+            .then((size) => expect(size).toBe(2))
+        })
+        .then(done)
+        .catch(done.fail)
+    })
+
+    it('should remove an item if the user clicks no', (done) => {
+      pendingQueueList
+        .all(by.className('bm-pending-queue__remove-item'))
+        .first()
+        .click()
+
+      browser.switchTo().alert().accept()
+        .then(() => browser.waitForAngular())
+        .then(() => {
+          pendingQueueList
+            .all(by.tagName('li'))
+            .count()
+            .then((size) => expect(size).toBe(1))
+        })
+        .then(done)
+        .catch(done.fail)
+    })
   })
 })

@@ -1,7 +1,7 @@
 'use strict'
 
-PendingQueueListController.$inject = ['$scope', '$q', '$sce', 'bmPendingQueueService']
-function PendingQueueListController($scope, $q, $sce, bmPendingQueueService) {
+PendingQueueListController.$inject = ['$scope', '$q', '$sce', '$window', 'bmPendingQueueService']
+function PendingQueueListController($scope, $q, $sce, $window, bmPendingQueueService) {
   const $ctrl = this
   const watchers = []
   let fetching = false
@@ -23,11 +23,21 @@ function PendingQueueListController($scope, $q, $sce, bmPendingQueueService) {
   }
 
   $ctrl.selectItem = function(item) {
-    $ctrl.onSelectItem && $ctrl.onSelectItem({ item })
+    $ctrl.onSelectItem && $ctrl.onSelectItem({item})
   }
 
+  const remove = (uuid) => bmPendingQueueService.remove(uuid).then($ctrl.getQueue)
   $ctrl.removeItem = function(uuid) {
-    return bmPendingQueueService.remove(uuid).then($ctrl.getQueue)
+    if ($ctrl.onRemoveItem) {
+      return bmPendingQueueService.getItem(uuid)
+        .then((item) => $ctrl.onRemoveItem({item}))
+        .then(remove)
+        .catch(() => false)
+    }
+
+    if ($window.confirm('Are you sure you want to remove this item?')) {
+      return remove(uuid)
+    }
   }
 
   $ctrl.getQueue = function() {
@@ -64,6 +74,7 @@ module.exports = {
   bindings: {
     displayKey: '@',
     displayRemove: '@?',
-    onSelectItem: '&?'
+    onSelectItem: '&?',
+    onRemoveItem: '&?'
   }
 }

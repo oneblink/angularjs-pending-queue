@@ -1,6 +1,10 @@
 {
   "name": "@blinkmobile/angularjs-pending-queue",
   "description": "Offline storage and auto retry of form submission for AngularJS",
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/blinkmobile/angularjs-pending-queue.git"
+  },
   "version": "1.0.0-alpha.1",
   "author": "Blink Mobile Technologies",
   "contributors": [

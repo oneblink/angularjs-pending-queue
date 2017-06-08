@@ -86,6 +86,6 @@
     "test": "gulp test-single-run",
     "test-e2e": "npm-run-all -s build -p -r webdriver-start e2e-server protractor",
     "test-human": "npm-run-all -s build -p e2e-server opn",
-    "webdriver-start": "webdriver-manager start --logging test/e2e/logger-config.json"
+    "webdriver-start": "webdriver-manager start --standalone --logging test/e2e/logger-config.json"
   }
 }

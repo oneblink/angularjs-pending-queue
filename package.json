@@ -79,7 +79,7 @@
     "eslint": "eslint --fix --cache .",
     "fixpack": "fixpack",
     "opn": "opn http://localhost:8000/test/e2e/index.html",
-    "postinstall": "webdriver-manager update",
+    "postinstall": "webdriver-manager update --standalone",
     "prepublishOnly": "gulp build",
     "pretest": "npm run eslint && npm run fixpack",
     "protractor": "protractor test/protractor/conf.js",

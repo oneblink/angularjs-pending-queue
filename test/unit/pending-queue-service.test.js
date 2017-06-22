@@ -28,7 +28,7 @@ describe('PENDING QUEUE SERVICE', () => {
     let uuid
 
     bmPendingQueueService
-      .save({ data: {} })
+      .setItem({ data: {} })
       .then(result => {
         uuid = result.request.data._uuid
         expect(uuid).not.toBe(undefined)
@@ -52,7 +52,7 @@ describe('PENDING QUEUE SERVICE', () => {
       const save = (memo, val) => {
         return memo.then(() =>
           bmPendingQueueService
-            .save({ data: { id: val } })
+            .setItem({ data: { id: val } })
             .then(data => uuids.push(data.request.data._uuid))
         )
       }
@@ -88,7 +88,7 @@ describe('PENDING QUEUE SERVICE', () => {
       const expectedUUID = uuids[0]
       const expectedId = 1
       bmPendingQueueService
-        .get(expectedUUID)
+        .getItem(expectedUUID)
         .then(result => {
           expect(result).not.toBe(undefined)
           expect(result.request.data._uuid).toBe(expectedUUID)
@@ -100,7 +100,7 @@ describe('PENDING QUEUE SERVICE', () => {
 
     it('should return `null` if entry is not in the pending queue', done => {
       bmPendingQueueService
-        .get('doesnt exist')
+        .getItem('doesnt exist')
         .then((result) => expect(result).toBeNull())
         .then(done)
         .catch(done.fail)
@@ -110,13 +110,13 @@ describe('PENDING QUEUE SERVICE', () => {
       const expectedUUID = uuids[0]
       const expectedId = 1
       bmPendingQueueService
-        .remove(expectedUUID)
+        .removeItem(expectedUUID)
         .then((result) => {
           expect(result).not.toBe(undefined)
           expect(result.request.data._uuid).toBe(expectedUUID)
           expect(result.request.data.id).toBe(expectedId)
         })
-        .then(() => bmPendingQueueService.get(expectedUUID))
+        .then(() => bmPendingQueueService.getItem(expectedUUID))
         .then(result => expect(result).toBeNull())
         .then(done)
         .catch(done.fail)
@@ -124,7 +124,7 @@ describe('PENDING QUEUE SERVICE', () => {
 
     it('should return null when removing a uuid that doesnt exist', done => {
       bmPendingQueueService
-        .remove('doesnt exist')
+        .removeItem('doesnt exist')
         .then((result) => expect(result).toBeNull())
         .then(done)
         .catch(done.fail)
@@ -135,7 +135,7 @@ describe('PENDING QUEUE SERVICE', () => {
       const expectedId = 1
       const expectedResponse = 'new response'
       bmPendingQueueService
-        .get(expectedUUID)
+        .getItem(expectedUUID)
         .then((result) => {
           expect(result).not.toBe(undefined)
           expect(result.request.data._uuid).toBe(expectedUUID)
@@ -143,7 +143,7 @@ describe('PENDING QUEUE SERVICE', () => {
 
           return bmPendingQueueService.setResponse(expectedUUID, expectedResponse)
         })
-        .then(() => bmPendingQueueService.get(expectedUUID))
+        .then(() => bmPendingQueueService.getItem(expectedUUID))
         .then((result) => {
           expect(result).not.toBeNull()
           expect(result.response).toBe(expectedResponse)
@@ -157,8 +157,8 @@ describe('PENDING QUEUE SERVICE', () => {
       const config = { data: { foo: 'bar', _uuid: uuid } }
 
       bmPendingQueueService
-        .save(config)
-        .then(savedItem => {
+        .setItem(config)
+        .then((savedItem) => {
           expect(savedItem.request.data).toEqual(config.data)
         })
         .then(done)

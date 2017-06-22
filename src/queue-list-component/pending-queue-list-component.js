@@ -26,7 +26,7 @@ function PendingQueueListController($scope, $q, $sce, $window, bmPendingQueueSer
     $ctrl.onSelectItem && $ctrl.onSelectItem({item})
   }
 
-  const remove = (uuid) => bmPendingQueueService.remove(uuid).then($ctrl.getQueue)
+  const remove = (uuid) => bmPendingQueueService.removeItem(uuid).then($ctrl.getQueue)
   $ctrl.removeItem = function(uuid) {
     if ($ctrl.onRemoveItem) {
       return bmPendingQueueService.getItem(uuid)

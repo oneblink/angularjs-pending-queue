@@ -32,11 +32,11 @@ describe('PENDING QUEUE INTERCEPTOR,', () => {
   describe('when a request fails, ', () => {
     describe('is not a form submission,', () => {
       beforeEach(() => {
-        spyOn(bmPendingQueueService, 'save')
+        spyOn(bmPendingQueueService, 'setItem')
       })
 
       afterEach(() => {
-        bmPendingQueueService.save.calls.reset()
+        bmPendingQueueService.setItem.calls.reset()
       })
 
       it('should not save GET requests to the pending queue', (done) => {
@@ -45,7 +45,7 @@ describe('PENDING QUEUE INTERCEPTOR,', () => {
         bmPendingQueueInterceptor.requestError(httpConfig)
           .then(done.fail)
           .catch((result) => {
-            expect(bmPendingQueueService.save).not.toHaveBeenCalled()
+            expect(bmPendingQueueService.setItem).not.toHaveBeenCalled()
             expect(result).toBe(httpConfig)
           })
           .then(done)
@@ -63,7 +63,7 @@ describe('PENDING QUEUE INTERCEPTOR,', () => {
           bmPendingQueueInterceptor.requestError(httpConfig)
             .then(done.fail)
             .catch((result) => {
-              expect(bmPendingQueueService.save).not.toHaveBeenCalled()
+              expect(bmPendingQueueService.setItem).not.toHaveBeenCalled()
               expect(result).toBe(httpConfig)
             })
             .then(done)
@@ -73,12 +73,12 @@ describe('PENDING QUEUE INTERCEPTOR,', () => {
 
     describe('is a form submission,', () => {
       beforeEach(() => {
-        spyOn(bmPendingQueueService, 'save').and.returnValue($q.resolve())
+        spyOn(bmPendingQueueService, 'setItem').and.returnValue($q.resolve())
         spyOn(bmPendingQueueService, 'setResponse').and.returnValue($q.resolve())
       })
 
       afterEach(() => {
-        bmPendingQueueService.save.calls.reset()
+        bmPendingQueueService.setItem.calls.reset()
         bmPendingQueueService.setResponse.calls.reset()
       })
 
@@ -98,7 +98,7 @@ describe('PENDING QUEUE INTERCEPTOR,', () => {
             bmPendingQueueInterceptor.requestError(httpConfig)
               .then(done.fail)
               .catch((result) => {
-                expect(bmPendingQueueService.save).toHaveBeenCalled()
+                expect(bmPendingQueueService.setItem).toHaveBeenCalled()
                 expect(result).toBe(httpConfig)
               })
               .then(done)
@@ -118,7 +118,7 @@ describe('PENDING QUEUE INTERCEPTOR,', () => {
             bmPendingQueueInterceptor.requestError(httpConfig)
               .then(done.fail)
               .catch((result) => {
-                expect(bmPendingQueueService.save).toHaveBeenCalled()
+                expect(bmPendingQueueService.setItem).toHaveBeenCalled()
                 expect(result).toBe(httpConfig)
               })
               .then(done)
@@ -132,13 +132,13 @@ describe('PENDING QUEUE INTERCEPTOR,', () => {
     describe('is a form submission,', () => {
       describe('and was successfully submitted', () => {
         beforeEach(() => {
-          spyOn(bmPendingQueueService, 'save').and.returnValue($q.resolve())
-          spyOn(bmPendingQueueService, 'remove').and.returnValue($q.resolve())
+          spyOn(bmPendingQueueService, 'setItem').and.returnValue($q.resolve())
+          spyOn(bmPendingQueueService, 'removeItem').and.returnValue($q.resolve())
         })
 
         afterEach(() => {
-          bmPendingQueueService.remove.calls.reset()
-          bmPendingQueueService.save.calls.reset()
+          bmPendingQueueService.removeItem.calls.reset()
+          bmPendingQueueService.setItem.calls.reset()
         })
 
         it('should remove the item from the pending queue', (done) => {
@@ -154,7 +154,7 @@ describe('PENDING QUEUE INTERCEPTOR,', () => {
           }
 
           bmPendingQueueInterceptor.response(response)
-            .then(() => expect(bmPendingQueueService.remove).toHaveBeenCalledWith('uuid'))
+            .then(() => expect(bmPendingQueueService.removeItem).toHaveBeenCalledWith('uuid'))
             .then(done)
             .catch(done.fail)
         })
@@ -173,12 +173,12 @@ describe('PENDING QUEUE INTERCEPTOR,', () => {
         }
 
         beforeEach(() => {
-          spyOn(bmPendingQueueService, 'remove')
+          spyOn(bmPendingQueueService, 'removeItem')
           spyOn(bmPendingQueueService, 'setResponse').and.returnValue($q.resolve(response))
         })
 
         afterEach(() => {
-          bmPendingQueueService.remove.calls.reset()
+          bmPendingQueueService.removeItem.calls.reset()
           bmPendingQueueService.setResponse.calls.reset()
         })
 
@@ -191,7 +191,7 @@ describe('PENDING QUEUE INTERCEPTOR,', () => {
 
           bmPendingQueueInterceptor.responseError(response)
             .then((result) => {
-              expect(bmPendingQueueService.remove).not.toHaveBeenCalled()
+              expect(bmPendingQueueService.removeItem).not.toHaveBeenCalled()
               expect(bmPendingQueueService.setResponse).toHaveBeenCalledWith(response.config.data._uuid, expectedUpdateData)
               expect(result).toBe(response)
             })

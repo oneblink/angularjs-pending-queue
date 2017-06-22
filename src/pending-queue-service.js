@@ -2,7 +2,7 @@
 
 pendingQueueService.$inject = ['$rootScope', '$q', '$localForage', 'uuidService']
 function pendingQueueService($rootScope, $q, $localForage, uuidService) {
-  this.save = function saveToPendingQueue({url, data, headers, params, method}) {
+  this.setItem = function saveToPendingQueue({url, data, headers, params, method}) {
     const uuid = data._uuid || uuidService()
     data._uuid = uuid // make sure that the _uuid prop exists
 
@@ -17,7 +17,7 @@ function pendingQueueService($rootScope, $q, $localForage, uuidService) {
       })
   }
 
-  this.get = function getFromPendingQueue(uuid) {
+  this.getItem = function getFromPendingQueue(uuid) {
     return $localForage.getItem(uuid)
   }
 
@@ -39,7 +39,7 @@ function pendingQueueService($rootScope, $q, $localForage, uuidService) {
     })
   }
 
-  this.remove = function removeFromPendingQueue(uuid) {
+  this.removeItem = function removeFromPendingQueue(uuid) {
     return $localForage.pull(uuid).then(result => {
       $rootScope.$broadcast('bmPendingQueueRemove', result)
       return result
@@ -54,7 +54,7 @@ function pendingQueueService($rootScope, $q, $localForage, uuidService) {
   }
 
   this.setResponse = function setResponseOnItem(uuid, response) {
-    return this.get(uuid)
+    return this.getItem(uuid)
       .then((data) => {
         data.response = response
         $rootScope.$broadcast('bmPendingQueueItemUpdate', data)

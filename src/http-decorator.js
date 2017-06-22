@@ -2,7 +2,7 @@
 
 httpDecorator.$inject = ['$delegate', '$q', '$timeout', '$rootScope', 'bmPendingQueueService']
 function httpDecorator($delegate, $q, $timeout, $rootScope, bmPendingQueueService) {
-  const sendNextPending = response => {
+  const sendNextPending = (response) => {
     // we dont want to make the user wait for all the pending
     // queue items to be sent and processed
     $rootScope.$evalAsync(() => {

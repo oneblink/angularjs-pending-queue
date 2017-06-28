@@ -21,7 +21,7 @@ function pendingQueueInteceptor($window, $q, bmPendingQueueService) {
         }
 
         return bmPendingQueueService
-          .save(rejection.config)
+          .setItem(rejection.config)
           .then(() => bmPendingQueueService.setResponse(rejection.config.data._uuid, cleanedResponse))
           .then(() => $q.reject(rejection))
       }
@@ -34,7 +34,7 @@ function pendingQueueInteceptor($window, $q, bmPendingQueueService) {
         return response
       }
 
-      return bmPendingQueueService.remove(response.config.data._uuid).then(() => response)
+      return bmPendingQueueService.removeItem(response.config.data._uuid).then(() => response)
     },
 
     responseError: function PendingQueueResponseError(rejection) {
@@ -46,7 +46,7 @@ function pendingQueueInteceptor($window, $q, bmPendingQueueService) {
         }
 
         return bmPendingQueueService
-          .save(rejection.config)
+          .setItem(rejection.config)
           .then(() => bmPendingQueueService.setResponse(rejection.config.data._uuid, cleanedResponse))
           .then(() => $q.reject(rejection))
       }

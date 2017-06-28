@@ -59,7 +59,8 @@
     "npm": ">=4"
   },
   "files": [
-    "dist/"
+    "dist/",
+    "docs/"
   ],
   "homepage": "https://github.com/blinkmobile/angularjs-pending-queue",
   "keywords": [
